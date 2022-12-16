@@ -1,2 +1,2 @@
 # EEIService
-Energy Efficiency Investments Service
+Energy Efficiency Investments Derisking Service (Pilot 8)
