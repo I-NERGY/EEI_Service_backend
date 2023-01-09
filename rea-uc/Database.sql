@@ -5,7 +5,8 @@ CREATE TABLE "buildings" (
   "serie" int,
   "floors" float,
   "usefull_area" float,
-  "total_area" float
+  "total_area" float,
+  "perimeter" float
 );
 
 CREATE TABLE "audits" (
