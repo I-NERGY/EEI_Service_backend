@@ -1,7 +1,7 @@
 import pandas as pd
 from sqlalchemy import create_engine
 
-engine = create_engine("postgresql://rea:rea@147.102.6.64:5555")
+engine = create_engine("postgresql://<user>:<password>@<ip>:<port>")
 
 df = pd.read_csv("datasets/CSV/Building_envelope_audits_1_cleaned.csv", encoding='utf-16')
 df2 = pd.read_csv("datasets/CSV/Building_envelope_audits_2_cleaned.csv", encoding='utf-16')
