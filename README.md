@@ -1,4 +1,4 @@
-﻿# EEIService
+﻿# EEI_Service_backend
 Energy Efficiency Investments Derisking Service backend(Pilot 8)
 
 ## Database
