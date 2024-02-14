@@ -18,3 +18,19 @@ This section contains files related to machine learning. `pytorch-kfold` creates
 
 ## Paper
 This section contains a preprint of the paper derived from the machine learning algorithm developed for this service.
+
+
+### Instructions
+To run the API:
+1. Build the Docker image using the provided Dockerfile. 
+```bash
+   docker build -t rea-fastapi:2.0 .
+   ```
+2. Run the image to create the container of the api 
+```bash
+   docker run -d -p 8000:8000 -v ~/rea-uc/apisrc:/app/src --name rea-api-final-2 rea-fastapi:2.0
+   ```
+To run the PostGIS:
+```bash
+   docker compose up -d --build
+   ```
