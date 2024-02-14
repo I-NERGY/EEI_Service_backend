@@ -16,7 +16,7 @@ import numpy as np
 import joblib
 
 tags_metadata = [
-    {"name": "Buildings Info", "description": "REST API for retrieving elements from the buildings table"},
+    {"name": "Building Information", "description": "REST API for retrieving elements from the buildings table"},
     {"name": "Building Series", "description": "REST API for posting the building series of the examined buildings"},
     {"name": "Predicted Audit", "description": "REST APIs for exposing the output of the ML Model"},
     {"name": "Energy Measures", "description": "REST APIs for addressing the admin capabilities of the application"},
@@ -310,34 +310,88 @@ def ml_output(cadastre_number, buildings):
 
 
 def ml_output_envelope(cadastre_number,energy_measures):
-    categories = {}
-
+    categories = {'english': {}, 'latvian': {}}
+    #
     for index, measure in enumerate(energy_measures):
         unit = measure.unit
         measure.energy_measure_id = index
 
-        category_name, category_number = get_category_name(unit)
-        if category_name not in categories:
-            categories[category_name] = {
-                'categoryName': category_name,
+        category_name_english, category_number = get_category_name_english(unit)
+        if category_name_english not in categories['english']:
+            categories['english'][category_name_english] = {
+                'categoryName': category_name_english,
                 'categoryItems': [],
             }
-        item = {
-            'id': measure.energy_measure_id,                
-            'measureName': measure.measure,  # Using the 'measure' field from the database
-            'cost': measure.total_per_unit_with_profit,  # Using the 'total_per_unit_with_profit' field from the database
+        #['english']
+        #'categoryLanguage': 'english',
+        
+        category_name_latvian, category_number = get_category_name_latvian(unit)
+        if category_name_latvian not in categories['latvian']:
+            categories['latvian'][category_name_latvian] = {
+                'categoryName': category_name_latvian,
+                'categoryItems': [],
+            }
+
+        item_english = {
+            'id': measure.energy_measure_id,
+            'measureName': measure.measure,
+            'cost': abs(measure.total_per_unit_with_profit),
             'thickness': measure.thickness,
-            'checked': False,   # You can set the 'checked' field as needed
+            'checked': False,
             'U': measure.u_value,
-            'category': category_number                
+            'category': category_number
         }
-        categories[category_name]['categoryItems'].append(item)
+        # Translate the measureName for the Latvian category
+        item_latvian = {
+            'id': measure.energy_measure_id,
+            'measureName': translate_measure_name_english_to_latvian(measure.measure),
+            'cost': abs(measure.total_per_unit_with_profit),
+            'thickness': measure.thickness,
+            'checked': False,
+            'U': measure.u_value,
+            'category': category_number
+        }
+        categories['english'][category_name_english]['categoryItems'].append(item_english)
+        #['english']
+        categories['latvian'][category_name_latvian]['categoryItems'].append(item_latvian)
+    english = list(categories['english'].values())
+    latvian = list(categories['latvian'].values())
 
-    result = list(categories.values())
-    return result
+    combined = {
+    'english': english,
+    'latvian': latvian
+    }
+    return combined
 
 
-def get_category_name(unit):
+def translate_measure_name_english_to_latvian(english_measure_name):
+    translation_dict = {
+    'Attic insulation with bulk stone wool': 'Bēniņu siltināšana ar akmens vati',
+    'Attic insulation with ECO wool': 'Bēniņu siltināšana ar EKO vati',
+    'Roof insulation with stone wool': 'Jumta siltināšana ar akmens vati',
+    'Roof insulation with polystyrene foam': 'Jumta siltināšana ar putupolistirolu',
+    'Roof insulation with ECO wool': 'Jumta siltināšana ar EKO vati',
+    'Roof insulation with polyurethane': 'Jumta siltināšana ar poliuretānu',
+    'Roof insulation with phenolic foam': 'Jumta siltināšana ar fenola putām',
+    'Facade insulation with stone wool': 'Fasādes siltināšana ar akmens vati',
+    'Facade insulation with polystyrene foam': 'Fasādes siltināšana ar putupolistirolu',
+    'Ventilated facade with stone wool insulation': 'Ventilējamā fasāde ar akmens vates izolāciju',
+    'Ventilated facade with ECO wool insulation': 'Ventilējamā fasāde ar EKO vates izolāciju',
+    'Assembly of internal wall vacuum insulation panels': 'Iekšējo sienu vakuumizolācijas paneļu montāža',
+    'Insulation of the basement cover with stone wool': 'Pagraba pārseguma siltināšana ar akmens vati',
+    '2-Pane window (U=1.0)': 'Divkameru logs (U=1.0)',
+    'Entrance doors (U=0.9)': 'Ieejas durvis (U=0.9)',
+    '2-Pane window (U=0.8)': 'Divkameru logs (U=0.8)',
+    'Entrance doors (U=1.8)': 'Ieejas durvis (U=1.8)',
+    '2-Pane window (U=1.4)': 'Divkameru logs (U=1.4)',
+    'Insulation of the plinth with polystyrene foam': 'Cokola siltināšana ar putupolistirolu',
+    'Insulation of the plinth with polyurethane': 'Cokola siltināšana ar poliuretānu',
+    
+    }
+    return translation_dict.get(english_measure_name, english_measure_name)
+
+
+def get_category_name_english(unit):
     if "Windows/doors" in unit:
         return "Replacement of windows", 5
     elif "Front door" in unit:
@@ -357,7 +411,25 @@ def get_category_name(unit):
     else:
         return "Other", 6  # A default category for units that don't match any specific category
 
-
+def get_category_name_latvian(unit):
+    if "Windows/doors" in unit:
+        return "Logu nomaiņa", 5
+    elif "Front door" in unit:
+        return "Durvju nomaiņa", 4
+    elif "Attic cover" in unit:
+        return "Jumta/bēniņu plātnes siltināšana", 2
+    elif "roof" in unit:
+        return "Jumta/bēniņu plātnes siltināšana", 2
+    elif "Exterior wall"  in unit:
+        return "Fasādes siltināšana" , 3
+    elif "External wall" in unit:
+        return "Fasādes siltināšana", 3
+    elif "Thermal insulation of internal walls" in unit:
+        return "Grīdas siltināšana", 1
+    elif "Basement" in unit:
+        return "Grīdas siltināšana", 1
+    else:
+        return "Cits", 6
 """
 def ml_output_envelope(cadastre_number):
     return [ { "id": 0, "title": "Windows/Doors", "cost": 1000, "checked": False},  
@@ -404,7 +476,7 @@ def recalculate_energy_consumption(u_columns, areas_columns, remaining_columns):
     return energy_consumption / 1000
   
 
-@app.get("/buildings/", tags=['Buildings Info'])
+@app.get("/buildings/", tags=['Building Information'])
 async def read_buildings(db:Session = Depends(get_db)):
     buildings = db.query(Building).all()
     #series_list.clear()
