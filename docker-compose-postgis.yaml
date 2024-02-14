@@ -1,0 +1,20 @@
+version: '3'
+volumes:
+  pgdata_airflow:
+
+services:
+
+  postgres:
+    image: postgis/postgis:latest
+    container_name: postgis
+    hostname: postgis
+    restart: always
+    environment:
+      - POSTGRES_USER=<USER>
+      - POSTGRES_PASSWORD=<PASSWORD>
+      - POSTGRES_DB=<DATABASE>
+    volumes:
+      - pgdata_airflow:/var/lib/postgresql/data
+    ports:
+      - 5555:5432
+

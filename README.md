@@ -1,24 +1,20 @@
 ﻿# EEIService
-Energy Efficiency Investments Derisking Service (Pilot 8)
+Energy Efficiency Investments Derisking Service backend(Pilot 8)
 
-The Database.sql creates the necessary tables in a PostgreSQL\PostGIS database based in NTUA's premises.
+## Database
+The `Database.sql` script creates the necessary tables in a PostgreSQL/PostGIS database located at NTUA's premises.
 
-DATA-MANIPULATION
+## DATA-MANIPULATION
+This section includes scripts that split unstructured Excel files into CSV files, except for `read_gpkg.py`, which reads the State Land Dataset from a .gpkg file provided by REA, including geometrical information of housing in Riga. Other scripts like `read_riga_dhs.py`, `read_envelope.py`, `read_energy_efficiency.py`, and `read_audits.py` handle operations on various datasets and create tables in the corresponding database.
 
-Each script splits the unstructured excel files into csv files in programming readable form. The only exception is read_gpkg.py which reads the State Land Dataset from the .gpkg file given by REA, including Geometrical information of the housing in Riga. Accordingly, read_riga_dhs.py makes operation in Riga DHS Database and creates the table validation in the corresponding database, read_envelope.py summarizes the operations done in the second sheet of the Audits excel files containing information about the envelope components of the already audited buildings.Same goes for read_energy_efficiency.py holding information from the Energy_Efficiency_Measures dataset. Finally, read_audits.py creates most of the tables in the database, reading, splitting and comprehending unstructured information from the two Audit Datasets.
+## APISRC
+This section contains a Dockerfile for the API and all necessary files for the backend of the application to be functional.
 
-APISRC
+## DATASETS
+This section contains all datasets used for the service. Some were provided by the partner REA, while others were created using data-manipulation scripts.
 
-Contains a Dockerfile for the api and all the necessary files in order for the back end side of the application to be functional.
+## MACHINE LEARNING
+This section contains files related to machine learning. `pytorch-kfold` creates a physics-informed neural network, `ml_algorithm` prepares final datasets for machine learning algorithms, and `ml-for-backend` creates shallow regression models to predict envelope segments and energy consumption of buildings with less accuracy than the physics-informed algorithms.
 
-DATASETS
-
-Here are all the datasets used for the service. Some were provided by the partner REA and some other were created using the data-manipulation scripts provided in another folder.
-
-MACHINE LEARNING
-
-There are 3 files in this folder. The pytorch-kfold creates the physics-informed neural network, while the ml_algorithm creates the final datasets in form for the machine learning algorithm. Finally the ml-for-backend file creates some shallow regression models to predict the segments of the envelope as well as the energy consumption of a building with less accuracy than the physics informed algorithms.
-
-Paper
-
-Here lies a preprint of our paper, coming from the machine learning algorithm developed for this service.
+## Paper
+This section contains a preprint of the paper derived from the machine learning algorithm developed for this service.
