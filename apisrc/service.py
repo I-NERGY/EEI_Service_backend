@@ -27,7 +27,7 @@ tags_metadata = [
 
 
 
-my_database_connection = "postgresql://rea:rea@inergy.epu.ntua.gr:5555"
+my_database_connection = "postgresql://<user>:<password>@<ip>:<port>""
 
 #engine1 = create_engine(my_database_connection, pool_pre_ping = True)
 #Base1 = automap_base()
